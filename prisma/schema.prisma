@@ -14,18 +14,18 @@ datasource db {
 }
 
 model User {
-    id               String    @id @default(cuid())
+    id               String     @id @default(cuid())
     name             String?
-    email            String?   @unique
+    email            String?    @unique
     emailVerifiedAt  DateTime?
-    studentId        String?   @unique
-    stripeCustomerId String?   @unique
-    azureAdId        String?   @unique
-    githubId         String?   @unique
-    googleId         String?   @unique
-    role             Role      @default(EXTERNAL)
+    studentId        String?    @unique
+    stripeCustomerId String?    @unique
+    azureAdId        String?    @unique
+    githubId         String?    @unique
+    googleId         String?    @unique
+    role             Role       @default(EXTERNAL)
     Order            Order[]
-    Plannig          Plannig[]
+    Planning         Planning[]
 }
 
 enum Role {
@@ -94,16 +94,16 @@ enum TransactionStatus {
     EXPIRED
 }
 
-model Plannig {
-    id        String        @id @default(cuid())
-    member    User          @relation(fields: [userId], references: [id])
+model Planning {
+    id        String         @id @default(cuid())
+    member    User           @relation(fields: [userId], references: [id])
     startDate DateTime
     endDate   DateTime
-    status    PlannigStatus
+    status    PlanningStatus
     userId    String
 }
 
-enum PlannigStatus {
+enum PlanningStatus {
     AVAILABLE
     CANCELED
 }
