@@ -55,7 +55,7 @@ model Product {
     products              Product[]     @relation("PackageProducts")
     packageId             String?
     package               Product?      @relation("PackageProducts", fields: [packageId], references: [id])
-    Consumption           Consumption[]
+    consumption           Consumption[]
 }
 
 model Order {
