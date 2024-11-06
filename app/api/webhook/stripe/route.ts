@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { Stripe } from "@/lib/stripe";
 import { NextResponse } from "next/server";
 import { default as stripe } from "stripe";
 
@@ -24,19 +24,35 @@ export const POST = async (req: any) => {
             try {
                 const session = event.data.object as stripe.Checkout.Session;
 
-                return NextResponse.json({ received: true });
+                if (await Stripe.checkIsProcessed(session)) {
+                    return NextResponse.json({ received: true });
+                }
+
+                if (await Stripe.handleSessionComplete(session)) {
+                    return NextResponse.json({ received: true });
+                }
+
+                return NextResponse.json({ error: "Error completing" }, { status: 500 });
             } catch (error) {
-                console.log("⚠️ Stripe checkout session completed failed", error);
-                return NextResponse.json({ error: "Error updating transaction" }, { status: 500 });
+                console.error("⚠️ Stripe checkout session completed failed", error);
+                return NextResponse.json({ error: "Error in database" }, { status: 500 });
             }
         }
         case "checkout.session.expired": {
-            const session = event.data.object as stripe.Checkout.Session;
-
             try {
-                return NextResponse.json({ received: true });
+                const session = event.data.object as stripe.Checkout.Session;
+
+                if (await Stripe.checkIsProcessed(session)) {
+                    return NextResponse.json({ received: true });
+                }
+
+                if (await Stripe.handleSessionExpire(session)) {
+                    return NextResponse.json({ received: true });
+                }
+
+                return NextResponse.json({ error: "Error expiring" }, { status: 500 });
             } catch (error) {
-                console.log("⚠️ Stripe checkout session expired failed", error);
+                console.error("⚠️ Stripe checkout session expired failed", error);
                 return NextResponse.json({ error: "Error updating transaction" }, { status: 500 });
             }
         }
