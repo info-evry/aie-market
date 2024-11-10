@@ -1,4 +1,3 @@
-"use server";
 import prisma from "@/lib/prisma";
 import { Order, Product, User } from "@prisma/client";
 import _Stripe from "stripe";
@@ -87,11 +86,14 @@ export class Stripe {
      *
      * @throws Error if no products are found
      */
-    public static async createCheckoutSession(user: User, order: Order): Promise<string> {
+    public static async createCheckoutSession(
+        user: User,
+        order: Order,
+    ): Promise<{ sessionId: string; amount: number; url: string }> {
         try {
             const products = await prisma.product.findMany({
                 where: {
-                    Consumption: {
+                    consumption: {
                         some: {
                             orderId: order.id,
                         },
@@ -118,14 +120,25 @@ export class Stripe {
                         product: product.id,
                         unit_amount: Stripe.getCustomizedPrice(user, product),
                     },
-                    quantity: 1,
+                    quantity: 1, // TODO: handle quantity correctly
                 })),
                 customer: user.stripeCustomerId,
                 success_url: `${process.env.NEXT_PUBLIC_URL}/success`,
                 cancel_url: `${process.env.NEXT_PUBLIC_URL}/cancel`,
             });
 
-            return session.id;
+            if (!session.url) {
+                throw new Error("Unable to create checkout session: url not found");
+            }
+
+            return {
+                sessionId: session.id,
+                amount: products.reduce(
+                    (acc, product) => acc + Stripe.getCustomizedPrice(user, product),
+                    0,
+                ),
+                url: session.url,
+            };
         } catch (error) {
             console.error(error);
             throw new Error("Failed to create checkout session");
