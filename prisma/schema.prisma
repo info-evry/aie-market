@@ -37,7 +37,7 @@ enum Role {
 }
 
 model Product {
-    id                    String        @id @default(cuid())
+    id                    String         @id @default(cuid())
     title                 String
     description           String?
     priceMember           Int
@@ -47,25 +47,41 @@ model Product {
     category              String?
     isExclusiveToStudents Boolean?
     isExternal            Boolean?
-    isActive              Boolean       @default(true)
-    createdAt             DateTime      @default(now())
+    isActive              Boolean        @default(true)
+    createdAt             DateTime       @default(now())
     deletedAt             DateTime?
     image                 Bytes
     // Packages specific
-    products              Product[]     @relation("PackageProducts")
+    products              Product[]      @relation("PackageProducts")
     packageId             String?
-    package               Product?      @relation("PackageProducts", fields: [packageId], references: [id])
+    package               Product?       @relation("PackageProducts", fields: [packageId], references: [id])
     consumption           Consumption[]
+    Order                 Order?         @relation(fields: [orderId], references: [id])
+    orderId               String?
+    OrderProduct          OrderProduct[]
 }
 
 model Order {
-    id          String        @id @default(cuid())
-    products    Consumption[]
-    customer    User          @relation(fields: [userId], references: [id])
-    createdAt   DateTime      @default(now())
-    updatedAt   DateTime      @updatedAt
-    userId      String
-    Transaction Transaction[]
+    id           String         @id @default(cuid())
+    products     OrderProduct[]
+    consumptions Consumption[]
+    customer     User           @relation(fields: [userId], references: [id])
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    userId       String
+    Transaction  Transaction[]
+    Product      Product[]
+}
+
+model OrderProduct {
+    id        String  @id @default(cuid())
+    product   Product @relation(fields: [productId], references: [id])
+    order     Order   @relation(fields: [orderId], references: [id])
+    productId String
+    orderId   String
+    quantity  Int
+
+    @@unique([orderId, productId]) // Ensures each product can only appear once per order
 }
 
 model Consumption {
