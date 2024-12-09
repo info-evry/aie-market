@@ -1,0 +1,143 @@
+{
+  "name": "market-api-endpoint",
+  "version": "1",
+  "items": [
+    {
+      "type": "folder",
+      "name": "Product Endpoints",
+      "items": [
+        {
+          "type": "http",
+          "name": "Create Product",
+          "seq": 2,
+          "request": {
+            "url": "http://localhost:3000/api/product",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"title\":\"cafe\",\n  \"description\" : \"blablababla\",\n  \"priceMember\" :5,\n  \"priceExternal\" : 10,\n  \"test\" :\"VEREE\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Get all product OR by page",
+          "seq": 1,
+          "request": {
+            "url": "http://localhost:3000/api/product?page=1&limit=3",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "limit",
+                "value": "3",
+                "type": "query",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Edit product",
+          "seq": 3,
+          "request": {
+            "url": "http://localhost:3000/api/product/:id",
+            "method": "PUT",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "cm35py95n000fa3km7tzg6cc3",
+                "type": "path",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"title\": \"Updated Product Title 3\"\n}",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "Soft delete product",
+          "seq": 4,
+          "request": {
+            "url": "http://localhost:3000/api/product/:id",
+            "method": "DELETE",
+            "headers": [],
+            "params": [
+              {
+                "name": "id",
+                "value": "cm35pxm8t000k12c8dvt2jhlk",
+                "type": "path",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "auth": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "environments": [],
+  "brunoConfig": {
+    "version": "1",
+    "name": "market-api-endpoint",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  }
+}
