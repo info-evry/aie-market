@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { Kbd } from "@radix-ui/themes";
 
 export default async function Home() {
     const user = await prisma.user.findMany();
@@ -9,6 +10,7 @@ export default async function Home() {
         <>
             <p>Testing</p>
             <pre>{JSON.stringify(user, null, 2)}</pre>
+            <Kbd>Shift + Tab</Kbd>
         </>
     );
 }

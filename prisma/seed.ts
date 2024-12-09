@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { PrismaClient, Product, User } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -57,7 +57,7 @@ async function createFakeOrder(userId: string, productIds: string[]) {
             },
             products: {
                 createMany: {
-                    data: productIds.map((id) => ({ productId: id })),
+                    data: productIds.map((id) => ({ productId: id, quantity: 1 })),
                 },
             },
         },
