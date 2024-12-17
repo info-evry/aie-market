@@ -1,6 +1,17 @@
 import { z } from "zod";
 const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const base64ImageSchema = z
+    .string()
+    .refine((image) => {
+        // Vérifier que l'image est une chaîne Base64 valide qui commence par un préfixe MIME valide
+        const regex = /^data:image\/(jpeg|png|webp);base64,/;
+        return regex.test(image);
+    }, "Invalid image format. Must be a valid base64 encoded image with one of the following formats: .jpeg, .png, .webp.")
+    .refine((image) => {
+        const base64String = image.split(",")[1];
+        const decoded = Buffer.from(base64String, "base64");
+        return decoded.length <= MAX_FILE_SIZE;
+    }, `Max image size is ${MAX_FILE_SIZE / (1024 * 1024)}MB.`);
 
 export const CreateSchema = z.object({
     title: z
@@ -37,17 +48,7 @@ export const CreateSchema = z.object({
     isExclusiveToStudents: z.boolean().optional(),
     isExternal: z.boolean().optional(),
     isActive: z.boolean().default(true),
-    image: z
-        .object({
-            image: z
-                .any()
-                .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
-                .refine(
-                    (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
-                    "Only .jpg, .jpeg, .png and .webp formats are supported.",
-                ),
-        })
-        .optional(),
+    image: base64ImageSchema.optional(),
     createdAt: z.date().default(new Date()),
     deletedAt: z.date().optional().nullable(),
     packageId: z.string().cuid().optional().nullable(),
