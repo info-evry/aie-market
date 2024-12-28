@@ -1,22 +1,20 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { CreateSchema } from "@/schema/product/create_schema";
-import { ParamsSchema, ParamsSchemaValues } from "@/schema/pagination_schema";
 import { ZodError } from "zod";
 import { restockSchema } from "@/schema/restock/restock_schema";
-import deleteSchema from "@/schema/delete/delete_schema";
+import { NextRequest } from "next/server";
 
-export const PUT = auth(async (req: any, res: any) => {
+export const PUT = async (req: NextRequest) => {
     try {
         const body = await req.json();
+        //get data
         const values = restockSchema.parse(body);
         let dataToUpdate = {};
         const id = req.url.split("/").pop();
-        if (values !== undefined && Object.keys(values).length > 0) {
-            dataToUpdate = {
-                ...values,
-            };
-        }
+        dataToUpdate = {
+            ...values,
+        };
+        //update DB
         const product = await prisma.product.update({
             where: {
                 id,
@@ -27,7 +25,7 @@ export const PUT = auth(async (req: any, res: any) => {
         });
         return Response.json(
             {
-                message: "Le produit a été modifié avec succès.",
+                message: "Le produit été modifié avec succès.",
                 status: "success",
             },
             { status: 200 },
@@ -35,61 +33,66 @@ export const PUT = auth(async (req: any, res: any) => {
     } catch (error: any) {
         if (error instanceof ZodError) {
             if (error instanceof ZodError) {
-                return Response.json({
-                    code: "400",
-                    message: "Invalid input",
-                    detail: error.issues.reduce((acc, curr) => acc + curr.message + "\n", ""),
-                    more: error.issues.reduce((acc, curr) => acc + curr.path.join("->") + " ", ""),
-                });
+                return Response.json(
+                    {
+                        message: "Zod Error",
+                        detail: error.issues.reduce((acc, curr) => acc + curr.message + "\n", ""),
+                        more: error.issues.reduce(
+                            (acc, curr) => acc + curr.path.join("->") + " ",
+                            "",
+                        ),
+                    },
+                    {
+                        status: 400,
+                    },
+                );
             }
         } else {
             return Response.json(
                 {
-                    message: "Les données envoyées sont invalides.",
-                    status: error,
+                    message: "Aucune donnée envoyé à mettre à jour.",
                 },
-                { status: 400 },
+                {
+                    status: 418,
+                },
             );
         }
     }
-});
-export const DELETE = auth(async (req, res) => {
-    const user = req.auth?.user;
+}; // Add closing parenthesis here
+export const DELETE = async (req: NextRequest) => {
+    // const user = req.user;
     try {
         const url = req.url;
         const id = url?.split("/").pop();
-        const values = deleteSchema.parse({ id });
-        const product = await prisma.product.update({
-            where: {
-                id: values.id,
-            },
-            data: {
-                deletedAt: new Date(),
-            },
-        });
-        return Response.json(
-            {
-                message: "Le produit a été supprimé avec succès.",
-                status: "success",
-            },
-            { status: 200 },
-        );
-    } catch (error: any) {
-        if (error instanceof ZodError) {
-            return Response.json({
-                code: "400",
-                message: "Invalid input",
-                detail: error.issues.reduce((acc, curr) => acc + curr.message + "\n", ""),
-                more: error.issues.reduce((acc, curr) => acc + curr.path.join("->") + " ", ""),
+        if (id) {
+            const product = await prisma.product.update({
+                where: {
+                    id,
+                },
+                data: {
+                    deletedAt: new Date(),
+                },
             });
-        } else {
             return Response.json(
                 {
-                    message: "Les données envoyées sont invalides.",
-                    status: "error",
+                    message: "Le produit a été supprimé avec succès.",
+                    status: "success",
                 },
-                { status: 400 },
+                { status: 200 },
             );
         }
+        return Response.json(
+            {
+                message: "Method Not Allowed",
+            },
+            { status: 405 },
+        );
+    } catch (error: any) {
+        return Response.json(
+            {
+                message: "ID invalide",
+            },
+            { status: 400 },
+        );
     }
-});
+};

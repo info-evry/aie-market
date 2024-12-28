@@ -1,4 +1,4 @@
-import { GET, POST } from "../api/product/route";
+import { GET, POST } from "../../api/product/route";
 //GET
 it("should return data between 1 & 3 with status 200", async () => {
     const requestObj = {
