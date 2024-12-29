@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import { restockSchema } from "@/schema/restock/restock_schema";
 import { NextRequest } from "next/server";
 
-export const PUT = async (req: NextRequest) => {
+export const PATCH = async (req: NextRequest) => {
     try {
         const body = await req.json();
         //get data
