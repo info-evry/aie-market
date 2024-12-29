@@ -3,8 +3,9 @@ import prisma from "@/lib/prisma";
 import { ZodError } from "zod";
 import { restockSchema } from "@/schema/restock/restock_schema";
 import { NextRequest } from "next/server";
+import { el } from "@faker-js/faker";
 
-export const PUT = async (req: NextRequest) => {
+export const PATCH = async (req: NextRequest) => {
     try {
         const body = await req.json();
         //get data
@@ -15,21 +16,30 @@ export const PUT = async (req: NextRequest) => {
             ...values,
         };
         //update DB
-        const product = await prisma.product.update({
-            where: {
-                id,
-            },
-            data: {
-                ...dataToUpdate,
-            },
-        });
-        return Response.json(
-            {
-                message: "Le produit été modifié avec succès.",
-                status: "success",
-            },
-            { status: 200 },
-        );
+        if (id) {
+            const product = await prisma.product.update({
+                where: {
+                    id,
+                },
+                data: {
+                    ...dataToUpdate,
+                },
+            });
+            return Response.json(
+                {
+                    message: "Le produit été modifié avec succès.",
+                    status: "success",
+                },
+                { status: 200 },
+            );
+        } else {
+            return Response.json(
+                {
+                    message: "Method Not Allowed",
+                },
+                { status: 405 },
+            );
+        }
     } catch (error: any) {
         if (error instanceof ZodError) {
             if (error instanceof ZodError) {

@@ -1,4 +1,4 @@
-import { PUT } from "../../../../api/product/[id]/route";
+import { PATCH } from "../../../../api/product/[id]/route";
 import { DELETE } from "../../../../api/product/[id]/route";
 
 const VALID_ID = "cm58qpv3g000eu6xdj7o2n7d0"; //PLS BEFORE RUNNING THE TEST, CHECK IF THIS ID IS VALID
@@ -14,7 +14,7 @@ it("should restock a product successfully with status 200", async () => {
         url: "/product/" + VALID_ID,
     } as any;
 
-    const response: any = await PUT(requestObj);
+    const response: any = await PATCH(requestObj);
     const body = await response?.json();
 
     expect(response?.status).toBe(200);
@@ -30,7 +30,7 @@ it("should return Zod Error when input is not valid according to restockSchema w
         url: "/product/" + VALID_ID, // Use a valid product ID for testing
     } as any;
 
-    const response = await PUT(requestObj);
+    const response = await PATCH(requestObj);
     const body = await response?.json();
 
     expect(response?.status).toBe(400);
@@ -44,13 +44,27 @@ it("should return Zod Error when body is missing or empty with status 418", asyn
         url: "/product/" + VALID_ID, // Use a valid product ID for testing
     } as any;
 
-    const response = await PUT(requestObj);
+    const response = await PATCH(requestObj);
     const body = await response?.json();
 
     expect(response?.status).toBe(418);
     expect(body.message).toContain("Aucune donnée envoyé à mettre à jour.");
 });
 
+it("should return Method Not Allowed when the product ID is missing with status 405", async () => {
+    const requestObj = {
+        json: async () => ({
+            quantity: "150",
+        }),
+        url: "/product/" + UNDEFINED_ID, // Missing product ID
+    } as any;
+
+    const response = await PATCH(requestObj);
+    const body = await response?.json();
+
+    expect(response?.status).toBe(405);
+    expect(body.message).toContain("Method Not Allowed");
+});
 //DELETE
 // Test case: Successfully delete a product
 it("should delete a product successfully with status 200", async () => {
