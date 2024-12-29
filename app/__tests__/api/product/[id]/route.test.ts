@@ -51,6 +51,20 @@ it("should return Zod Error when body is missing or empty with status 418", asyn
     expect(body.message).toContain("Aucune donnée envoyé à mettre à jour.");
 });
 
+it("should return Method Not Allowed when the product ID is missing with status 405", async () => {
+    const requestObj = {
+        json: async () => ({
+            quantity: "150",
+        }),
+        url: "/product/" + UNDEFINED_ID, // Missing product ID
+    } as any;
+
+    const response = await PATCH(requestObj);
+    const body = await response?.json();
+
+    expect(response?.status).toBe(405);
+    expect(body.message).toContain("Method Not Allowed");
+});
 //DELETE
 // Test case: Successfully delete a product
 it("should delete a product successfully with status 200", async () => {
