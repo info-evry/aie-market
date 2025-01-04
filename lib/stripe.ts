@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
-import { Order, Product, User } from "@prisma/client";
+import { Order, Prisma, PrismaClient, Product, User } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 import _Stripe from "stripe";
 
 export const stripe = new _Stripe(process.env.STRIPE_SECRET ?? "", {
@@ -89,9 +90,13 @@ export class Stripe {
     public static async createCheckoutSession(
         user: User,
         order: Order,
+        tx: Omit<
+            PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+            "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+        > = prisma,
     ): Promise<{ sessionId: string; amount: number; url: string }> {
         try {
-            const products = await prisma.product.findMany({
+            const products = await tx.product.findMany({
                 where: {
                     consumption: {
                         some: {
@@ -117,7 +122,10 @@ export class Stripe {
                 line_items: products.map((product) => ({
                     price_data: {
                         currency: "eur",
-                        product: product.id,
+                        product_data: {
+                            name: product.title,
+                            description: product.description ?? "",
+                        },
                         unit_amount: Stripe.getCustomizedPrice(user, product),
                     },
                     quantity: 1, // TODO: handle quantity correctly

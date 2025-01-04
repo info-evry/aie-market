@@ -89,6 +89,7 @@ model Consumption {
     product   Product  @relation(fields: [productId], references: [id])
     order     Order    @relation(fields: [orderId], references: [id])
     date      DateTime @default(now())
+    quantity  Int
     productId String
     orderId   String
 }
