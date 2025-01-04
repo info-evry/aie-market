@@ -1,10 +1,8 @@
-import { auth } from "../../../lib/auth";
-import prisma from "../../../lib/prisma";
-import { CreateSchema } from "../../../schema/product/create_schema";
-import { ParamsSchema, ParamsSchemaValues } from "../../../schema/pagination_schema";
-import { ZodError } from "zod";
-import restockSchema from "../../../schema/restock/restock_schema";
 import { NextRequest } from "next/server";
+import { ZodError } from "zod";
+import prisma from "../../../lib/prisma";
+import { ParamsSchema, ParamsSchemaValues } from "../../../schema/pagination_schema";
+import { CreateSchema } from "../../../schema/product/create_schema";
 
 export const POST = async (req: NextRequest) => {
     // const user = req.auth.user;
