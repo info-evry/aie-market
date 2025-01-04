@@ -9,6 +9,8 @@ import { usePathname } from "next/navigation";
 export function Navbar() {
     const path = usePathname();
 
+    if (path.startsWith("/auth")) return null;
+
     return (
         <div className="bg-white">
             <div className="flex items-center justify-center">

@@ -20,7 +20,7 @@ export function auth(handler: (req: NextRequest, res: NextApiResponse) => void) 
                 emailVerifiedAt: new Date(),
                 githubId: "123",
                 googleId: "123",
-                id: "cm5h2v5t00000mjudobfok9v0",
+                id: "cm5ij2ha90001he4hqb3uvyc5",
                 role: "ADMIN",
                 stripeCustomerId: "cus_PoJpILZXmK6C1I",
                 studentId: "123",
