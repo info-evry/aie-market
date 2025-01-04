@@ -62,15 +62,16 @@ model Product {
 }
 
 model Order {
-    id           String         @id @default(cuid())
-    products     OrderProduct[]
-    consumptions Consumption[]
-    customer     User           @relation(fields: [userId], references: [id])
-    createdAt    DateTime       @default(now())
-    updatedAt    DateTime       @updatedAt
-    userId       String
-    Transaction  Transaction[]
-    Product      Product[]
+    id            String         @id @default(cuid())
+    products      OrderProduct[]
+    consumptions  Consumption[]
+    customer      User           @relation(fields: [userId], references: [id])
+    createdAt     DateTime       @default(now())
+    updatedAt     DateTime       @updatedAt
+    userId        String
+    Product       Product[]
+    Transaction   Transaction?   @relation(fields: [transactionId], references: [id])
+    transactionId String?        @unique
 }
 
 model OrderProduct {
@@ -101,8 +102,7 @@ model Transaction {
     status            TransactionStatus
     createdAt         DateTime          @default(now())
     updatedAt         DateTime          @updatedAt
-    order             Order             @relation(fields: [orderId], references: [id])
-    orderId           String
+    Order             Order?
 }
 
 enum TransactionStatus {

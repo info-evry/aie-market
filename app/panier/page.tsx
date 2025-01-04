@@ -10,7 +10,7 @@ import { useState } from "react";
 export default function PanierPage() {
     const [creatingOrder, setCreatingOrder] = useState(false);
     const { data, error, loading } = useFetch<{ mappedBody: Product[] }>("/api/product");
-    const { get, remove } = useCartStore();
+    const { get, remove, clear } = useCartStore();
     const productsCart = get()
         .map((item) => {
             const product = data?.mappedBody.find((el) => el.id === item.id);
@@ -45,6 +45,7 @@ export default function PanierPage() {
         }
 
         const data = await response.json();
+        clear();
         window.location.href = data.url;
     };
 

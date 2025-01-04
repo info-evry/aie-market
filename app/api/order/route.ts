@@ -19,7 +19,11 @@ export const POST = auth(async (req, res) => {
         await prisma.$transaction(async (tx) => {
             const orderCreated = await tx.order.create({
                 data: {
-                    userId: user.id,
+                    customer: {
+                        connect: {
+                            id: user.id,
+                        },
+                    },
                     consumptions: {
                         createMany: {
                             data: items.map((item) => ({
@@ -61,6 +65,7 @@ export const POST = auth(async (req, res) => {
 
         return Response.json({ url });
     } catch (error: any) {
+        console.log(error);
         return Response.json({ error: error.message }, { status: 500 });
     }
 });

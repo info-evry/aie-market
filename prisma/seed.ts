@@ -45,7 +45,6 @@ async function createFakeProduct() {
 async function createFakeOrder(userId: string, productIds: string[]) {
     return await prisma.order.create({
         data: {
-            userId,
             createdAt: new Date(),
             updatedAt: new Date(),
             Transaction: {
@@ -58,6 +57,11 @@ async function createFakeOrder(userId: string, productIds: string[]) {
             products: {
                 createMany: {
                     data: productIds.map((id) => ({ productId: id, quantity: 1 })),
+                },
+            },
+            customer: {
+                connect: {
+                    id: userId,
                 },
             },
         },

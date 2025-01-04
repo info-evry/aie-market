@@ -11,6 +11,7 @@ type CartState = {
     add: (id: string, quantity: number) => void;
     remove: (id: string) => void;
     get: () => CartItem[];
+    clear: () => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -38,6 +39,10 @@ export const useCartStore = create<CartState>()(
 
             get: () => {
                 return get().cart;
+            },
+
+            clear: () => {
+                set({ cart: [] });
             },
         }),
         {
