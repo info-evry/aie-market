@@ -21,12 +21,15 @@ export default async function CommandesPage() {
         },
     });
 
-    // For each command, generate a QR code in a separate variable const QRs: [commandeId: string]: string
     const QRs: Record<string, string> = {};
 
     for (const commande of commandes) {
         if (commande.Transaction?.status === TransactionStatus.SUCCEEDED) {
-            const qr = await QRCode.toDataURL(commande.Transaction.id);
+            const qr = await QRCode.toDataURL(commande.id, {
+                errorCorrectionLevel: "H",
+                width: 300,
+                margin: 1,
+            });
             QRs[commande.id] = qr;
         }
     }
