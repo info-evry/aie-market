@@ -1,3 +1,4 @@
+import { Navbar } from "@/app/components/navbar";
 import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 import type { Metadata } from "next";
@@ -29,6 +30,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <Theme grayColor="mauve" panelBackground="translucent">
+                    <Navbar />
                     {children}
                 </Theme>
             </body>

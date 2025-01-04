@@ -10,8 +10,7 @@ type CartState = {
     cart: CartItem[];
     add: (id: string, quantity: number) => void;
     remove: (id: string) => void;
-    get: (id: string) => CartItem | undefined;
-    getAll: () => CartItem[];
+    get: () => CartItem[];
 };
 
 export const useCartStore = create<CartState>()(
@@ -37,12 +36,7 @@ export const useCartStore = create<CartState>()(
                 set({ cart: cart.filter((item) => item.id !== id) });
             },
 
-            get: (id: string) => {
-                const { cart } = get();
-                return cart.find((item) => item.id === id);
-            },
-
-            getAll: () => {
+            get: () => {
                 return get().cart;
             },
         }),

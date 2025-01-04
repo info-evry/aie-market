@@ -7,8 +7,8 @@ export default async function Home() {
     const products = await prisma.product.findMany();
 
     return (
-        <div className="bg-blue-100">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="min-h-screen bg-blue-100">
+            <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-3">
                 {products.map((product) => (
                     <ProductCard product={product} key={product.id} />
                 ))}
