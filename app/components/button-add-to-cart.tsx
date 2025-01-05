@@ -17,7 +17,7 @@ export function AddToCart({ id }: { id: string }) {
     return (
         <Button
             size="1"
-            variant="soft"
+            variant="outline"
             color={isAdding ? "green" : "blue"}
             className="!mt-auto !w-auto !self-start"
             onClick={onAdd}

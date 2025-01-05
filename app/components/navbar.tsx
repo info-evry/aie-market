@@ -18,8 +18,8 @@ export function Navbar() {
             </div>
             <div className="flex items-center justify-center">
                 <TabNav.Root>
-                    <TabNav.Link asChild active={path === "/home"}>
-                        <Link href="/home">Boutique</Link>
+                    <TabNav.Link asChild active={path === "/"}>
+                        <Link href="/">Boutique</Link>
                     </TabNav.Link>
                     <TabNav.Link asChild active={path === "/panier"}>
                         <Link href="/panier">Votre panier</Link>
