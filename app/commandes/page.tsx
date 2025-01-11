@@ -9,8 +9,6 @@ import { Fragment } from "react";
 export default async function CommandesPage() {
     const user = await server_getUser();
 
-    console.log(user);
-
     if (!user) {
         return null;
     }
