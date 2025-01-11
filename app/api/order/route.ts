@@ -16,52 +16,59 @@ export const POST = auth(async (req, res) => {
     try {
         let url;
 
-        await prisma.$transaction(async (tx) => {
-            const orderCreated = await tx.order.create({
-                data: {
-                    customer: {
-                        connect: {
-                            id: user.id,
+        await prisma.$transaction(
+            async (tx) => {
+                const orderCreated = await tx.order.create({
+                    data: {
+                        customer: {
+                            connect: {
+                                id: user.id,
+                            },
+                        },
+                        consumptions: {
+                            createMany: {
+                                data: items.map((item) => ({
+                                    productId: item.id,
+                                    quantity: item.quantity,
+                                })),
+                                skipDuplicates: true,
+                            },
+                        },
+                        products: {
+                            createMany: {
+                                data: items.map((item) => ({
+                                    productId: item.id,
+                                    quantity: item.quantity,
+                                })),
+                                skipDuplicates: true,
+                            },
                         },
                     },
-                    consumptions: {
-                        createMany: {
-                            data: items.map((item) => ({
-                                productId: item.id,
-                                quantity: item.quantity,
-                            })),
-                            skipDuplicates: true,
-                        },
-                    },
-                    products: {
-                        createMany: {
-                            data: items.map((item) => ({
-                                productId: item.id,
-                                quantity: item.quantity,
-                            })),
-                            skipDuplicates: true,
-                        },
-                    },
-                },
-            });
+                });
 
-            const session = await Stripe.createCheckoutSession(user, orderCreated, tx);
+                console.log("order created");
 
-            await tx.order.update({
-                where: { id: orderCreated.id },
-                data: {
-                    Transaction: {
-                        create: {
-                            amount: session.amount,
-                            status: "PENDING",
-                            checkoutSessionId: session.sessionId,
+                const session = await Stripe.createCheckoutSession(user, orderCreated, tx);
+
+                console.log("session created");
+
+                await tx.order.update({
+                    where: { id: orderCreated.id },
+                    data: {
+                        Transaction: {
+                            create: {
+                                amount: session.amount,
+                                status: "PENDING",
+                                checkoutSessionId: session.sessionId,
+                            },
                         },
                     },
-                },
-            });
+                });
 
-            url = session.url;
-        });
+                url = session.url;
+            },
+            { timeout: 20000 },
+        );
 
         return Response.json({ url });
     } catch (error: any) {
