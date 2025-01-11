@@ -24,7 +24,9 @@ export default function Page() {
     const onScan = async (codes: IDetectedBarcode[]) => {
         if (codes.length === 0) return;
         const id = codes[0].rawValue;
-        const data = await fetch("/api/order/" + id).then((res) => res.json());
+        const data = await fetch("/api/order/" + id, { credentials: "include" }).then((res) =>
+            res.json(),
+        );
 
         const _consumptions = data.consumptions.map((consumption: any) => ({
             consumptionId: consumption.id,
@@ -47,6 +49,7 @@ export default function Page() {
 
         const res = await fetch("/api/consume/" + consumptionId, {
             method: "POST",
+            credentials: "include",
         });
 
         if (res.status === 400 || res.status === 404 || res.status === 500) {

@@ -1,8 +1,8 @@
 import logo from "@/app/assets/logo.png";
+import { SsoButtons } from "@/app/auth/sso-buttons";
 import { Button, Heading, Link, Text, TextField } from "@radix-ui/themes";
 import { Metadata } from "next";
 import Image from "next/image";
-import { FaGithub, FaGoogle } from "react-icons/fa6";
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 export default function Layout() {
     return (
         <>
-            <div className="w-full h-screen bg-blue-100 flex justify-center items-center">
-                <div className="flex flex-col gap-5 p-8 bg-white w-full sm:max-w-md rounded-md">
+            <div className="flex h-screen w-full items-center justify-center bg-blue-100">
+                <div className="flex w-full flex-col gap-5 rounded-md bg-white p-8 sm:max-w-md">
                     <Image src={logo} width={200} alt="Picture of the author" />
                     <Heading as="h1" size="8">
                         Créer un compte
@@ -47,18 +47,7 @@ export default function Layout() {
                         <Text align="center" size="1" color="gray">
                             Ou
                         </Text>
-                        <Button size="2" variant="outline">
-                            <FaGoogle />
-                            Continuer avec Google
-                        </Button>
-                        {/* <Button size="2" variant="outline">
-                            <FaMicrosoft />
-                            Continuer avec Microsoft
-                        </Button> */}
-                        <Button size="2" variant="outline">
-                            <FaGithub />
-                            Continuer avec Github
-                        </Button>
+                        <SsoButtons />
                     </div>
                 </div>
             </div>
