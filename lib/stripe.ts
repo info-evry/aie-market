@@ -116,13 +116,9 @@ export class Stripe {
                 throw new Error("We can't create a checkout session without products");
             }
 
-            console.log(user);
-
             if (!user.stripeCustomerId) {
                 user.stripeCustomerId = await this.createStripeCustomer(user.id);
             }
-
-            console.log("Creating checkout session");
 
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ["card"],
@@ -144,8 +140,6 @@ export class Stripe {
                 success_url: `${process.env.NEXT_PUBLIC_URL}/success`,
                 cancel_url: `${process.env.NEXT_PUBLIC_URL}/cancel`,
             });
-
-            console.log("Checkout session created");
 
             if (!session.url) {
                 throw new Error("Unable to create checkout session: url not found");
