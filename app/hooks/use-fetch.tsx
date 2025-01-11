@@ -26,7 +26,7 @@ export function useFetch<T = unknown>(url?: string): FetchState<T> {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(url, { signal });
+                const response = await fetch(url, { signal, credentials: "include" });
                 if (!response.ok) {
                     throw new Error(`Fetch error: ${response.status} ${response.statusText}`);
                 }
