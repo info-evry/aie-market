@@ -1,3 +1,4 @@
+import { server_getUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { displayablePrice } from "@/lib/utils";
 import { TransactionStatus } from "@prisma/client";
@@ -6,7 +7,14 @@ import QRCode from "qrcode";
 import { Fragment } from "react";
 
 export default async function CommandesPage() {
-    const user = { id: "cm5ij2ha90001he4hqb3uvyc5" }; // TODO: Get user from session
+    const user = await server_getUser();
+
+    console.log(user);
+
+    if (!user) {
+        return null;
+    }
+
     const commandes = await prisma.order.findMany({
         where: {
             userId: user.id,
