@@ -11,6 +11,7 @@ import { VerifyTokenReponse } from "@/app/@types/ms-auth";
 import prisma from "@/lib/prisma";
 import { User } from "@prisma/client";
 import { NextApiResponse } from "next";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -54,4 +55,31 @@ export function auth(handler: (req: NextRequest, res: NextApiResponse) => void) 
             return NextResponse.redirect("/login?error=SERVER_ERROR");
         }
     };
+}
+
+export async function server_getUser(): Promise<User | null> {
+    const cookieStore = cookies(); // Access the cookies in the current request context
+    const token = cookieStore.get("auth-token")?.value;
+
+    if (!token) {
+        console.error("No token provided.");
+        return null;
+    }
+
+    const authUrl = process.env.NEXT_PUBLIC_AUTH_URL;
+
+    try {
+        const response = await fetch(`${authUrl}/auth/verify-token/${token}`);
+        const data: VerifyTokenReponse = await response.json();
+
+        if (!response.ok || !data.success) {
+            console.error("Invalid or expired token.");
+            return null;
+        }
+
+        return data.user;
+    } catch (error) {
+        console.error("Error fetching user from token:", error);
+        return null;
+    }
 }
