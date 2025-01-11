@@ -8,9 +8,10 @@ declare module "next/server" {
 }
 
 import { VerifyTokenReponse } from "@/app/@types/ms-auth";
+import prisma from "@/lib/prisma";
 import { User } from "@prisma/client";
 import { NextApiResponse } from "next";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 /**
  * API middleware to protect routes from unauthorized access
@@ -30,29 +31,27 @@ export function auth(handler: (req: NextRequest, res: NextApiResponse) => void) 
             const data: VerifyTokenReponse = await response.json();
 
             if (!response.ok || !data.success) {
-                res.status(401).json({ error: "Invalid token" });
-                return;
+                return NextResponse.redirect("/login?error=INVALID_TOKEN");
+            }
+
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: data.user.id,
+                },
+            });
+
+            if (!user) {
+                return NextResponse.redirect("/login?error=USER_NOT_FOUND");
             }
 
             req.auth = {
-                user: {
-                    id: data.user.id,
-                    email: data.user.email,
-                    name: data.user.name,
-                    azureAdId: data.user.azureAdId,
-                    emailVerifiedAt: data.user.emailVerifiedAt,
-                    githubId: data.user.githubId,
-                    googleId: data.user.googleId,
-                    role: data.user.role,
-                    stripeCustomerId: data.user.stripeCustomerId,
-                    studentId: data.user.studentId,
-                },
+                user,
             };
 
             return handler(req, res);
         } catch (error) {
             console.error("Error verifying token:", error);
-            res.status(500).json({ error: "Server error" });
+            return NextResponse.redirect("/login?error=SERVER_ERROR");
         }
     };
 }

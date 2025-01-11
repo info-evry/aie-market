@@ -106,14 +106,23 @@ export class Stripe {
                 },
             });
 
+            const orderProducts = await tx.orderProduct.findMany({
+                where: {
+                    orderId: order.id,
+                },
+            });
+
             if (products.length === 0) {
                 throw new Error("We can't create a checkout session without products");
             }
 
-            // Should never happen and be checked before
+            console.log(user);
+
             if (!user.stripeCustomerId) {
-                throw new Error("User has no stripe customer id");
+                user.stripeCustomerId = await this.createStripeCustomer(user.id);
             }
+
+            console.log("Creating checkout session");
 
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ["card"],
@@ -128,12 +137,15 @@ export class Stripe {
                         },
                         unit_amount: Stripe.getCustomizedPrice(user, product),
                     },
-                    quantity: 1, // TODO: handle quantity correctly
+                    quantity:
+                        orderProducts.find((el) => el.productId === product.id)?.quantity ?? 1,
                 })),
                 customer: user.stripeCustomerId,
                 success_url: `${process.env.NEXT_PUBLIC_URL}/success`,
                 cancel_url: `${process.env.NEXT_PUBLIC_URL}/cancel`,
             });
+
+            console.log("Checkout session created");
 
             if (!session.url) {
                 throw new Error("Unable to create checkout session: url not found");

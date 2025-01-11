@@ -1,7 +1,6 @@
 "use client";
 
 import { useCartStore } from "@/app/hooks/cart";
-import { useAuth } from "@/app/hooks/use-auth";
 import { useFetch } from "@/app/hooks/use-fetch";
 import { displayablePrice } from "@/lib/utils";
 import { Product } from "@prisma/client";
@@ -9,7 +8,6 @@ import { Button, Text } from "@radix-ui/themes";
 import { useState } from "react";
 
 export default function PanierPage() {
-    const { isLoggedIn, loading: authLoading, user } = useAuth();
     const [creatingOrder, setCreatingOrder] = useState(false);
     const { data, error, loading } = useFetch<{ mappedBody: Product[] }>("/api/product");
     const { get, remove, clear } = useCartStore();
@@ -58,7 +56,6 @@ export default function PanierPage() {
 
     return (
         <div className="flex min-h-screen justify-center bg-blue-100">
-            <button onClick={() => console.log(user)}>TOTOTOTO</button>
             <div className="mx-6 flex w-full flex-col gap-3 pt-3 sm:w-[500px]">
                 {productsCart.map((product) => {
                     return (
