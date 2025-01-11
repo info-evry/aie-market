@@ -46,11 +46,7 @@ export const POST = auth(async (req, res) => {
                     },
                 });
 
-                console.log("order created");
-
                 const session = await Stripe.createCheckoutSession(user, orderCreated, tx);
-
-                console.log("session created");
 
                 await tx.order.update({
                     where: { id: orderCreated.id },
