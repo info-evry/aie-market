@@ -2,7 +2,6 @@ import prisma from "@/lib/prisma";
 import { Order, Prisma, PrismaClient, Product, User } from "@prisma/client";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 import _Stripe from "stripe";
-
 export const stripe = new _Stripe(process.env.STRIPE_SECRET ?? "", {
     apiVersion: "2024-09-30.acacia",
     typescript: true,
@@ -185,13 +184,31 @@ export class Stripe {
                         status: "SUCCEEDED",
                     },
                 });
-
-                await tx.processEvent.create({
-                    data: {
-                        stripeId: event.id,
-                        type: "checkout.session.completed",
-                    },
+                // Send mail to the customer
+                const user = await tx.user.findUnique({
+                    where: { stripeCustomerId: event.customer as string },
                 });
+                if (user === null) {
+                    throw new Error("User not found");
+                }
+                const request = await fetch(
+                    `${process.env.NEXT_PUBLIC_NOTIFICATIONS_URL}/mailCommand`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            firstname: user.name,
+                            name: user.name,
+                            mail: user.email,
+                            noCommande: "eaea",
+                        }),
+                    },
+                );
+                if (!request.ok) {
+                    throw new Error("Failed to send mail");
+                }
             });
 
             return true;
