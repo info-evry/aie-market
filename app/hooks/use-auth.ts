@@ -8,6 +8,7 @@ interface AuthState {
     loading: boolean;
     loginWithGithub: () => void;
     loginWithGoogle: () => void;
+    logout: () => void;
     init: () => void;
 }
 
@@ -44,6 +45,11 @@ export const useAuth = create<AuthState>((set) => {
         isLoggedIn: false,
         user: null,
         loading: true,
+        logout: () => {
+            const url = process.env.NEXT_PUBLIC_URL;
+            if (!url) throw new Error("NEXT_PUBLIC_URL is not set");
+            window.location.href = `${url}/api/auth/logout`;
+        },
         loginWithGithub: () => {
             const authUrl = process.env.NEXT_PUBLIC_AUTH_URL;
             if (!authUrl) throw new Error("NEXT_PUBLIC_AUTH_URL is not set");
