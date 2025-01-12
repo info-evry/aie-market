@@ -1,4 +1,5 @@
 import { VerifyTokenReponse } from "@/app/@types/ms-auth";
+import { Role } from "@prisma/client";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -18,6 +19,13 @@ export async function middleware(request: NextRequest) {
 
         if (!response.ok || !data.success) {
             return NextResponse.redirect(`${appUrl}/auth/login?error=TOKEN_INVALID`);
+        }
+
+        // Protect admin routes
+        if (request.nextUrl.pathname.startsWith("/admin")) {
+            if (data.user.role !== Role.ADMIN) {
+                return NextResponse.redirect(`${appUrl}/`);
+            }
         }
 
         return NextResponse.next();
