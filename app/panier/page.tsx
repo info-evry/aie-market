@@ -52,7 +52,15 @@ export default function PanierPage() {
 
     if (loading) return <div>Chargement...</div>;
     if (error) return <div>Erreur: {error.message}</div>;
-    if (!productsCart) return <div>Aucun produit trouvé</div>;
+    if (!productsCart || productsCart.length === 0) {
+        return (
+            <div className="flex min-h-screen justify-center bg-blue-100">
+                <Text size="3" className="mt-4">
+                    Votre panier est vide
+                </Text>
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen justify-center bg-blue-100">
