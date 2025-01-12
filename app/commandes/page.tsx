@@ -25,6 +25,9 @@ export default async function CommandesPage() {
                 },
             },
         },
+        orderBy: {
+            createdAt: "desc",
+        },
     });
 
     const QRs: Record<string, string> = {};
