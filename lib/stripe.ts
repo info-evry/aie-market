@@ -188,31 +188,40 @@ export class Stripe {
                 const user = await tx.user.findUnique({
                     where: { stripeCustomerId: event.customer as string },
                 });
+
+                let order = await tx.order.findFirst({
+                    where: {
+                        Transaction: {
+                            checkoutSessionId: event.id,
+                        },
+                    },
+                });
+
+                if (order === null) {
+                    throw new Error("Order not found");
+                }
+
                 if (user === null) {
                     throw new Error("User not found");
                 }
-                const request = await fetch(
-                    `${process.env.NEXT_PUBLIC_NOTIFICATIONS_URL}/mailCommand`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            firstname: user.name,
-                            name: user.name,
-                            mail: user.email,
-                            noCommande: "eaea",
-                        }),
+
+                fetch(`${process.env.NEXT_PUBLIC_NOTIFICATIONS_URL}/mailCommand`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
                     },
-                );
-                if (!request.ok) {
-                    throw new Error("Failed to send mail");
-                }
+                    body: JSON.stringify({
+                        firstname: user.name,
+                        name: user.name,
+                        mail: user.email,
+                        noCommande: order.id,
+                    }),
+                });
             });
 
             return true;
         } catch (error) {
+            console.log(error);
             return false;
         }
     }
